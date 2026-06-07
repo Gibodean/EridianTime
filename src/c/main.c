@@ -52,7 +52,7 @@ static void apply_settings() {
   layer_set_hidden(text_layer_get_layer(s_earth_time_layer), !settings.show_human_time);
   layer_set_hidden(text_layer_get_layer(s_date_layer), !settings.show_human_date);
   
-  // Apply the specific Human Color to the text layers
+  // Apply the specific Human Colour to the text layers
   text_layer_set_text_color(s_earth_time_layer, settings.human_colour);
   text_layer_set_text_color(s_date_layer, settings.human_colour);
   
@@ -70,10 +70,10 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *sec_tuple = dict_find(iter, MESSAGE_KEY_show_eridian_secs);
   if(sec_tuple) settings.show_eridian_secs = sec_tuple->value->int32 == 1;
 
+  // Read the colours from Clay (using the updated Aussie spelling for your Keys!)
   Tuple *bg_colour_tuple = dict_find(iter, MESSAGE_KEY_bg_colour);
   if(bg_colour_tuple) settings.bg_colour = GColorFromHEX(bg_colour_tuple->value->int32);
 
-  // Read the two distinct colours from Clay
   Tuple *human_colour_tuple = dict_find(iter, MESSAGE_KEY_human_colour);
   if(human_colour_tuple) settings.human_colour = GColorFromHEX(human_colour_tuple->value->int32);
 
@@ -94,7 +94,7 @@ static int S(int val, bool big) {
 
 static void draw_eridian_digit(GContext *ctx, int digit, int x, int y, bool big) {
   graphics_context_set_stroke_width(ctx, big ? 8 : 5);
-  // Apply the specific Eridian Color to the graphics strokes
+  // Apply the specific Eridian Colour to the graphics strokes
   graphics_context_set_stroke_color(ctx, settings.eridian_colour);
   
   switch(digit) {
@@ -166,20 +166,15 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
   int total_w_3 = 3 * S(20, big_mode) + 2 * gap_x;
   
   int row_spacing = digit_h + gap_y;
-  int center_y = bounds.size.h / 2;
+  int centre_y = bounds.size.h / 2;
 
-  int y_hr = center_y - (digit_h / 2) - row_spacing;
-  int y_min = center_y - (digit_h / 2);
-  int y_sec = center_y - (digit_h / 2) + row_spacing;
+  int y_hr = centre_y - (digit_h / 2) - row_spacing;
+  int y_min = centre_y - (digit_h / 2);
+  int y_sec = centre_y - (digit_h / 2) + row_spacing;
 
   if (!settings.show_eridian_secs) {
     y_hr += row_spacing / 2;
     y_min += row_spacing / 2;
-  }
-  
-  if (!big_mode && !settings.show_eridian_secs) {
-    y_hr += 22;
-    y_min += 22;
   }
 
   // Draw Hours
