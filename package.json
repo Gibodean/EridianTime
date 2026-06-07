@@ -1,0 +1,33 @@
+{
+    "author": "Adrian",
+    "dependencies": {
+        "pebble-clay": "^1.0.0"
+    },
+    "keywords": [],
+    "name": "eridiantime",
+    "pebble": {
+        "displayName": "EridianTime",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "show_human_time",
+            "show_human_date",
+            "show_eridian_secs",
+            "bg_colour",
+            "human_colour",
+            "eridian_colour"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "emery"
+        ],
+        "uuid": "71f59e86-f379-45dd-aee2-65fe75320521",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}

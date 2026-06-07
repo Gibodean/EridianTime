@@ -1,0 +1,51 @@
+[
+  {
+    "type": "heading",
+    "defaultValue": "Eridian Clock Settings"
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "color",
+        "messageKey": "bg_colour",
+        "defaultValue": "0x000000",
+        "label": "Background Colour"
+      },
+      {
+        "type": "color",
+        "messageKey": "human_colour",
+        "defaultValue": "0xFFFFFF",
+        "label": "Human Text Colour"
+      },
+      {
+        "type": "color",
+        "messageKey": "eridian_colour",
+        "defaultValue": "0xFFFFFF",
+        "label": "Eridian Glyph Colour"
+      },
+      {
+        "type": "toggle",
+        "messageKey": "show_human_time",
+        "label": "Show Human Time",
+        "defaultValue": true
+      },
+      {
+        "type": "toggle",
+        "messageKey": "show_human_date",
+        "label": "Show Human Date",
+        "defaultValue": true
+      },
+      {
+        "type": "toggle",
+        "messageKey": "show_eridian_secs",
+        "label": "Show Eridian Seconds",
+        "defaultValue": true
+      }
+    ]
+  },
+  {
+    "type": "submit",
+    "defaultValue": "Save Settings"
+  }
+]
