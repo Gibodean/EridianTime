@@ -7,15 +7,21 @@
     "type": "section",
     "items": [
       {
+        "type": "toggle",
+        "messageKey": "use_image_bg",
+        "label": "Use Astrophage Image Background",
+        "defaultValue": true
+      },
+      {
         "type": "color",
         "messageKey": "bg_colour",
         "defaultValue": "0x000000",
-        "label": "Background Colour"
+        "label": "Solid Background Colour"
       },
       {
         "type": "color",
         "messageKey": "human_colour",
-        "defaultValue": "0xFFFFFF",
+        "defaultValue": "0xFFFF00",
         "label": "Human Text Colour"
       },
       {
@@ -40,7 +46,7 @@
         "type": "toggle",
         "messageKey": "show_eridian_secs",
         "label": "Show Eridian Seconds",
-        "defaultValue": true
+        "defaultValue": false
       }
     ]
   },

@@ -14,11 +14,19 @@
             "show_eridian_secs",
             "bg_colour",
             "human_colour",
-            "eridian_colour"
+            "eridian_colour",
+            "use_image_bg"
         ],
         "projectType": "native",
         "resources": {
-            "media": []
+            "media": [
+                {
+                    "file": "images/astrophage.png",
+                    "name": "IMAGE_ASTROPHAGE_BG",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
         },
         "sdkVersion": "3",
         "targetPlatforms": [
@@ -29,5 +37,5 @@
             "watchface": true
         }
     },
-    "version": "1.0.0"
+    "version": "1.2.0"
 }

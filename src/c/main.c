@@ -5,6 +5,10 @@ static Layer *s_canvas_layer;
 static TextLayer *s_earth_time_layer;
 static TextLayer *s_date_layer;
 
+// New pointers for the background image
+static GBitmap *s_bg_bitmap;
+static BitmapLayer *s_bg_layer;
+
 // ----------------------------------------------------------------------
 // SETTINGS FRAMEWORK
 // ----------------------------------------------------------------------
@@ -12,6 +16,7 @@ typedef struct ClaySettings {
   bool show_human_time;
   bool show_human_date;
   bool show_eridian_secs;
+  bool use_image_bg;
   GColor bg_colour;
   GColor human_colour;
   GColor eridian_colour;
@@ -22,10 +27,13 @@ static ClaySettings settings;
 static void default_settings() {
   settings.show_human_time = true;
   settings.show_human_date = true;
-  settings.show_eridian_secs = true;
-  settings.bg_colour = GColorBlack;
-  settings.human_colour = GColorWhite;
-  settings.eridian_colour = GColorWhite;
+  settings.show_eridian_secs = false;
+  
+  // New Defaults!
+  settings.use_image_bg = true;           // Background image ON by default
+  settings.bg_colour = GColorBlack;       // Still keeping black as the solid fallback
+  settings.human_colour = GColorYellow;   // Human text defaults to Yellow
+  settings.eridian_colour = GColorWhite;  // Eridian text defaults to White
 }
 
 static void load_settings() {
@@ -52,7 +60,9 @@ static void apply_settings() {
   layer_set_hidden(text_layer_get_layer(s_earth_time_layer), !settings.show_human_time);
   layer_set_hidden(text_layer_get_layer(s_date_layer), !settings.show_human_date);
   
-  // Apply the specific Human Colour to the text layers
+  // Hide or show the image background based on the toggle
+  layer_set_hidden(bitmap_layer_get_layer(s_bg_layer), !settings.use_image_bg);
+  
   text_layer_set_text_color(s_earth_time_layer, settings.human_colour);
   text_layer_set_text_color(s_date_layer, settings.human_colour);
   
@@ -70,7 +80,9 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *sec_tuple = dict_find(iter, MESSAGE_KEY_show_eridian_secs);
   if(sec_tuple) settings.show_eridian_secs = sec_tuple->value->int32 == 1;
 
-  // Read the colours from Clay (using the updated Aussie spelling for your Keys!)
+  Tuple *bg_img_tuple = dict_find(iter, MESSAGE_KEY_use_image_bg);
+  if(bg_img_tuple) settings.use_image_bg = bg_img_tuple->value->int32 == 1;
+
   Tuple *bg_colour_tuple = dict_find(iter, MESSAGE_KEY_bg_colour);
   if(bg_colour_tuple) settings.bg_colour = GColorFromHEX(bg_colour_tuple->value->int32);
 
@@ -94,7 +106,6 @@ static int S(int val, bool big) {
 
 static void draw_eridian_digit(GContext *ctx, int digit, int x, int y, bool big) {
   graphics_context_set_stroke_width(ctx, big ? 8 : 5);
-  // Apply the specific Eridian Colour to the graphics strokes
   graphics_context_set_stroke_color(ctx, settings.eridian_colour);
   
   switch(digit) {
@@ -153,8 +164,12 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
   struct tm *tick_time = localtime(&temp);
 
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, settings.bg_colour);
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+  
+  // Only draw the solid colour if the image background is toggled OFF
+  if (!settings.use_image_bg) {
+    graphics_context_set_fill_color(ctx, settings.bg_colour);
+    graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+  }
 
   bool big_mode = !settings.show_human_time && !settings.show_human_date;
   
@@ -218,10 +233,18 @@ static void main_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
+  // 1. Load the background image FIRST so it sits behind everything
+  s_bg_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_ASTROPHAGE_BG);
+  s_bg_layer = bitmap_layer_create(bounds);
+  bitmap_layer_set_bitmap(s_bg_layer, s_bg_bitmap);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_bg_layer));
+
+  // 2. Add the drawing canvas
   s_canvas_layer = layer_create(bounds);
   layer_set_update_proc(s_canvas_layer, canvas_update_proc);
   layer_add_child(window_layer, s_canvas_layer);
 
+  // 3. Add the human text layers on top
   s_earth_time_layer = text_layer_create(GRect(0, 5, bounds.size.w, 34));
   text_layer_set_background_color(s_earth_time_layer, GColorClear);
   text_layer_set_text_alignment(s_earth_time_layer, GTextAlignmentCenter);
@@ -239,6 +262,10 @@ static void main_window_unload(Window *window) {
   text_layer_destroy(s_earth_time_layer);
   text_layer_destroy(s_date_layer);
   layer_destroy(s_canvas_layer);
+  
+  // Clean up image memory
+  bitmap_layer_destroy(s_bg_layer);
+  gbitmap_destroy(s_bg_bitmap);
 }
 
 static void init() {
